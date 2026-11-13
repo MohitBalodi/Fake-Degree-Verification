@@ -1,6 +1,9 @@
 from fastapi import APIRouter
 
-api_router = APIRouter()
+from app.api.v1 import auth
 
-# Routers are mounted here as each Tier 1 feature lands:
-#   auth, institutions, certificates, verify, reviews, share, admin
+api_router = APIRouter()
+api_router.include_router(auth.router)
+
+# Remaining Tier 1 routers are mounted here as they land:
+#   institutions, certificates, verify, reviews, share, admin

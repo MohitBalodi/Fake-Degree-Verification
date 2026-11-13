@@ -41,9 +41,7 @@ def validation_exception_handler(_: Request, exc: RequestValidationError) -> JSO
             "error": {
                 "code": "validation_error",
                 "message": "Request body or parameters are invalid.",
-                "fields": [
-                    {"loc": list(e["loc"]), "msg": e["msg"]} for e in exc.errors()
-                ],
+                "fields": [{"loc": list(e["loc"]), "msg": e["msg"]} for e in exc.errors()],
             }
         },
     )
