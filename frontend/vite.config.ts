@@ -3,6 +3,10 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    // Root-relative so no Node types are needed; mirrors `paths` in tsconfig.
+    alias: { '@': '/src' },
+  },
   server: {
     host: true,
     port: 5173,
