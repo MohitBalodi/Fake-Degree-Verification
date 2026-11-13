@@ -1,0 +1,43 @@
+# Tier 1 — everything needed for auth, registry, issue, verify-by-id/QR.
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+pydantic-settings==2.7.0
+python-multipart==0.0.20
+
+# DB
+SQLAlchemy==2.0.36
+psycopg[binary]==3.2.3
+alembic==1.14.0
+
+# Jobs
+redis==5.2.1
+rq==2.0.0
+
+# Auth
+passlib[argon2]==1.7.4
+argon2-cffi==23.1.0
+PyJWT==2.10.1
+
+# Crypto / QR / PDF
+cryptography==44.0.0
+qrcode[pil]==8.0
+pyzbar==0.1.9
+PyMuPDF==1.25.1
+reportlab==4.2.5
+
+# Matching
+rapidfuzz==3.11.0
+
+# Dev / tests
+pytest==8.3.4
+httpx==0.28.1
+ruff==0.8.4
+
+# Tier 2 (OCR) — uncomment when the upload pipeline starts. These are large;
+# keep them out of the image until they are actually used.
+# paddleocr==3.0.0
+# paddlepaddle==3.0.0
+# pytesseract==0.3.13
+# opencv-python-headless==4.10.0.84
+# PyYAML==6.0.2

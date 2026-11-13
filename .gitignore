@@ -1,0 +1,32 @@
+# Secrets & keys
+.env
+.env.local
+keys/*
+!keys/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+
+# Uploads / local data
+uploads/
+data/
+backend/data/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
