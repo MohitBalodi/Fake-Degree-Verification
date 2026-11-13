@@ -1,0 +1,8 @@
+cert_number,institution_code,student_name,roll_number,programme,year_of_passing,cgpa,marks,issue_date
+NBIT2025CS0201,NBIT,Good Row One,21CS201,B.Tech Computer Science and Engineering,2025,8.10,,2025-07-25
+NBIT2025CS0202,NBIT,Bad Grade,21CS202,B.Tech Computer Science and Engineering,2025,11.2,,2025-07-25
+NBIT2025CS0203,NBIT,Bad Date,21CS203,B.Tech Computer Science and Engineering,2025,7.50,,25/07/2025
+NBIT2025CS0204,OTHR,Wrong Institution,21CS204,B.Tech Computer Science and Engineering,2025,7.70,,2025-07-25
+NBIT2025CS0201,NBIT,Duplicate Number,21CS205,B.Tech Computer Science and Engineering,2025,8.00,,2025-07-25
+NBIT2024CS0001,NBIT,Already In Registry,21CS206,B.Tech Computer Science and Engineering,2024,8.00,,2024-07-20
+NBIT2025CS0207,NBIT,No Grade,21CS207,B.Tech Computer Science and Engineering,2025,,,2025-07-25

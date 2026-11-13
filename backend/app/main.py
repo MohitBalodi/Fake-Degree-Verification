@@ -6,6 +6,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api.v1.router import api_router
 from app.core.config import settings
+from app.core.errors import AppError
 
 app = FastAPI(
     title="Authenticity Validator for Academia",
@@ -22,6 +23,14 @@ app.add_middleware(
 )
 
 
+@app.exception_handler(AppError)
+def app_error_handler(_: Request, exc: AppError) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"error": {"code": exc.code, "message": exc.message, **exc.extra}},
+    )
+
+
 @app.exception_handler(StarletteHTTPException)
 def http_exception_handler(_: Request, exc: StarletteHTTPException) -> JSONResponse:
     detail = exc.detail
@@ -30,6 +39,7 @@ def http_exception_handler(_: Request, exc: StarletteHTTPException) -> JSONRespo
     return JSONResponse(
         status_code=exc.status_code,
         content={"error": {"code": code, "message": message}},
+        headers=getattr(exc, "headers", None),
     )
 
 

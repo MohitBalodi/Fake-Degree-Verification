@@ -3,6 +3,7 @@ they never touch demo/seed data. Each test runs inside a transaction that is
 rolled back afterwards."""
 
 from collections.abc import Iterator
+from pathlib import Path
 from typing import Annotated
 
 import pytest
@@ -18,6 +19,7 @@ from app.core.deps import require_role
 from app.core.security import hash_password
 from app.main import app
 from app.models import Institution, Role, User
+from app.services.signing import load_or_create_private_key, public_key_pem
 
 PASSWORD = "Correct-Horse-1"
 
@@ -76,14 +78,32 @@ def client(db: Session) -> Iterator[TestClient]:
     app.dependency_overrides.clear()
 
 
-@pytest.fixture
-def users(db: Session) -> dict[str, User]:
-    inst = Institution(name="Test Institute (fictional)", code="TST", public_key="-")
+@pytest.fixture(autouse=True)
+def keys_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Signing keys go to a per-test temp dir, never the real KEYS_DIR."""
+    path = tmp_path / "keys"
+    monkeypatch.setattr(settings, "keys_dir", str(path))
+    return path
+
+
+def make_institution(db: Session, code: str, name: str) -> Institution:
+    key = load_or_create_private_key(code)
+    inst = Institution(name=name, code=code, public_key=public_key_pem(key))
     db.add(inst)
     db.flush()
+    return inst
+
+
+@pytest.fixture
+def users(db: Session) -> dict[str, User]:
+    inst = make_institution(db, "TST", "Test Institute (fictional)")
+    other = make_institution(db, "OTH", "Other Institute (fictional)")
     created = {
         "admin": User(email="admin@t.test", role="admin"),
         "institution": User(email="inst@t.test", role="institution", institution_id=inst.id),
+        "other_institution": User(
+            email="other@t.test", role="institution", institution_id=other.id
+        ),
         "verifier": User(email="verifier@t.test", role="verifier"),
         "inactive": User(email="gone@t.test", role="verifier", is_active=False),
     }
@@ -93,3 +113,15 @@ def users(db: Session) -> dict[str, User]:
         db.add(u)
     db.flush()
     return created
+
+
+@pytest.fixture
+def auth_headers(client: TestClient, users: dict[str, User]) -> dict[str, dict[str, str]]:
+    """Bearer headers per user key in `users`, e.g. auth_headers["institution"]."""
+    out = {}
+    for name, user in users.items():
+        if not user.is_active:
+            continue
+        r = client.post("/api/v1/auth/login", json={"email": user.email, "password": PASSWORD})
+        out[name] = {"Authorization": f"Bearer {r.json()['access_token']}"}
+    return out
