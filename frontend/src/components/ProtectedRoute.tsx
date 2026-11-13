@@ -25,10 +25,10 @@ export default function ProtectedRoute({ roles }: Props) {
 
   if (roles && !roles.includes(me.data.role)) {
     return (
-      <main className="mx-auto max-w-xl p-8">
+      <div className="mx-auto max-w-xl py-8">
         <h1 className="text-xl font-semibold">Not allowed</h1>
         <p className="mt-2 text-sm text-muted-foreground">Your role ({me.data.role}) cannot open this page.</p>
-      </main>
+      </div>
     );
   }
 

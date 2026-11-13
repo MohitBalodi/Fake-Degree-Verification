@@ -72,14 +72,183 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/certificates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Certificates */
+        get: operations["list_certificates_api_v1_certificates_get"];
+        put?: never;
+        /** Create Certificate */
+        post: operations["create_certificate_api_v1_certificates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/certificates/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import Certificates */
+        post: operations["import_certificates_api_v1_certificates_import_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/certificates/{certificate_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Certificate */
+        get: operations["get_certificate_api_v1_certificates__certificate_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Body_import_certificates_api_v1_certificates_import_post */
+        Body_import_certificates_api_v1_certificates_import_post: {
+            /**
+             * File
+             * Format: binary
+             */
+            file: string;
+        };
+        /**
+         * CertificateCreate
+         * @description POST /certificates. The institution is taken from the logged-in user.
+         */
+        CertificateCreate: {
+            /** Cert Number */
+            cert_number: string;
+            /** Student Name */
+            student_name: string;
+            /** Roll Number */
+            roll_number: string;
+            /** Programme */
+            programme: string;
+            /** Year Of Passing */
+            year_of_passing: number;
+            /**
+             * Cgpa
+             * @description 0–10 scale
+             */
+            cgpa?: number | string | null;
+            /**
+             * Marks
+             * @description Percentage, 0–100
+             */
+            marks?: number | string | null;
+            /**
+             * Issue Date
+             * Format: date
+             * @description YYYY-MM-DD
+             */
+            issue_date: string;
+        };
+        /** CertificateOut */
+        CertificateOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Cert Number */
+            cert_number: string;
+            institution: components["schemas"]["InstitutionSummary"];
+            /** Student Name */
+            student_name: string;
+            /** Roll Number */
+            roll_number: string;
+            /** Programme */
+            programme: string;
+            /** Year Of Passing */
+            year_of_passing: number;
+            /** Cgpa */
+            cgpa: string | null;
+            /** Marks */
+            marks: string | null;
+            /**
+             * Issue Date
+             * Format: date
+             */
+            issue_date: string;
+            /** Status */
+            status: string;
+            /** Revoked At */
+            revoked_at: string | null;
+            /** File Sha256 */
+            file_sha256: string | null;
+            /** Signature */
+            signature: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** ImportErrorBody */
+        ImportErrorBody: {
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+            /**
+             * Rows
+             * @default []
+             */
+            rows: components["schemas"]["ImportRowError"][];
+        };
+        /** ImportErrorResponse */
+        ImportErrorResponse: {
+            error: components["schemas"]["ImportErrorBody"];
+        };
+        /** ImportResult */
+        ImportResult: {
+            /** Imported */
+            imported: number;
+        };
+        /** ImportRowError */
+        ImportRowError: {
+            /**
+             * Row
+             * @description Line number in the CSV file (header is line 1).
+             */
+            row: number;
+            /**
+             * Field
+             * @description Column name, or null for whole-row problems.
+             */
+            field: string | null;
+            /** Message */
+            message: string;
         };
         /** InstitutionSummary */
         InstitutionSummary: {
@@ -96,6 +265,17 @@ export interface components {
             email: string;
             /** Password */
             password: string;
+        };
+        /** Page[CertificateOut] */
+        Page_CertificateOut_: {
+            /** Items */
+            items: components["schemas"]["CertificateOut"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Size */
+            size: number;
         };
         /** RefreshRequest */
         RefreshRequest: {
@@ -257,6 +437,137 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserOut"];
+                };
+            };
+        };
+    };
+    list_certificates_api_v1_certificates_get: {
+        parameters: {
+            query?: {
+                /** @description Search number, roll, name */
+                q?: string | null;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_CertificateOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_certificate_api_v1_certificates_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CertificateCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CertificateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_certificates_api_v1_certificates_import_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_import_certificates_api_v1_certificates_import_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResult"];
+                };
+            };
+            /** @description Per-row CSV errors */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportErrorResponse"];
+                };
+            };
+        };
+    };
+    get_certificate_api_v1_certificates__certificate_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                certificate_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CertificateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

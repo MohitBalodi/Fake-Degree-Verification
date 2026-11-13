@@ -21,7 +21,11 @@ interface NavItem {
   roles?: Role[];
 }
 
-const NAV: NavItem[] = [{ to: '/', label: 'Dashboard' }];
+const NAV: NavItem[] = [
+  { to: '/', label: 'Dashboard' },
+  { to: '/certificates', label: 'Certificates', roles: ['institution', 'admin'] },
+  { to: '/certificates/import', label: 'Import CSV', roles: ['institution'] },
+];
 
 /** Page chrome for logged-in pages. Rendered inside ProtectedRoute. */
 export default function AppLayout() {
@@ -42,7 +46,7 @@ export default function AppLayout() {
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.to === '/'}
+                end
                 className={({ isActive }) =>
                   cn(
                     'whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground',

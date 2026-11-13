@@ -6,7 +6,9 @@ import { SESSION_EXPIRED_EVENT } from '@/api/client';
 import AppLayout from '@/components/AppLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Toaster } from '@/components/ui/toaster';
+import Certificates from '@/pages/Certificates';
 import Dashboard from '@/pages/Dashboard';
+import ImportCertificates from '@/pages/ImportCertificates';
 import Login from '@/pages/Login';
 
 export default function App() {
@@ -29,6 +31,12 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/" element={<Dashboard />} />
+            <Route element={<ProtectedRoute roles={['institution', 'admin']} />}>
+              <Route path="/certificates" element={<Certificates />} />
+            </Route>
+            <Route element={<ProtectedRoute roles={['institution']} />}>
+              <Route path="/certificates/import" element={<ImportCertificates />} />
+            </Route>
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
