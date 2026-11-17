@@ -72,14 +72,275 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/certificates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Certificates */
+        get: operations["list_certificates_api_v1_certificates_get"];
+        put?: never;
+        /** Create Certificate */
+        post: operations["create_certificate_api_v1_certificates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/certificates/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import Certificates */
+        post: operations["import_certificates_api_v1_certificates_import_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/certificates/{certificate_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Certificate */
+        get: operations["get_certificate_api_v1_certificates__certificate_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/certificates/{certificate_id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Certificate Pdf
+         * @description Serve the PDF generated when the certificate was issued, byte for byte,
+         *     so its SHA-256 still matches `file_sha256`. It is never regenerated.
+         */
+        get: operations["get_certificate_pdf_api_v1_certificates__certificate_id__pdf_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/verify/id": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify By Id
+         * @description Verify by certificate number. Always returns a result with its evidence;
+         *     an unknown number is MANUAL_REVIEW, never an accusation.
+         */
+        post: operations["verify_by_id_api_v1_verify_id_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/verify/qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify By Qr
+         * @description Verify a scanned QR payload: the signature it carries is re-checked
+         *     against the registry record and the institution's public key.
+         */
+        post: operations["verify_by_qr_api_v1_verify_qr_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/verifications/{verification_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Verification */
+        get: operations["get_verification_api_v1_verifications__verification_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Body_import_certificates_api_v1_certificates_import_post */
+        Body_import_certificates_api_v1_certificates_import_post: {
+            /**
+             * File
+             * Format: binary
+             */
+            file: string;
+        };
+        /**
+         * CertificateCreate
+         * @description POST /certificates. The institution is taken from the logged-in user.
+         */
+        CertificateCreate: {
+            /** Cert Number */
+            cert_number: string;
+            /** Student Name */
+            student_name: string;
+            /** Roll Number */
+            roll_number: string;
+            /** Programme */
+            programme: string;
+            /** Year Of Passing */
+            year_of_passing: number;
+            /**
+             * Cgpa
+             * @description 0–10 scale
+             */
+            cgpa?: number | string | null;
+            /**
+             * Marks
+             * @description Percentage, 0–100
+             */
+            marks?: number | string | null;
+            /**
+             * Issue Date
+             * Format: date
+             * @description YYYY-MM-DD
+             */
+            issue_date: string;
+        };
+        /** CertificateOut */
+        CertificateOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Cert Number */
+            cert_number: string;
+            institution: components["schemas"]["InstitutionSummary"];
+            /** Student Name */
+            student_name: string;
+            /** Roll Number */
+            roll_number: string;
+            /** Programme */
+            programme: string;
+            /** Year Of Passing */
+            year_of_passing: number;
+            /** Cgpa */
+            cgpa: string | null;
+            /** Marks */
+            marks: string | null;
+            /**
+             * Issue Date
+             * Format: date
+             */
+            issue_date: string;
+            /** Status */
+            status: string;
+            /** Revoked At */
+            revoked_at: string | null;
+            /** File Sha256 */
+            file_sha256: string | null;
+            /** Signature */
+            signature: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * CheckOut
+         * @description One piece of evidence. `status` is pass | fail | skipped | uncertain.
+         */
+        CheckOut: {
+            /** Name */
+            name: string;
+            /** Status */
+            status: string;
+            /** Detail */
+            detail: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** ImportErrorBody */
+        ImportErrorBody: {
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+            /**
+             * Rows
+             * @default []
+             */
+            rows: components["schemas"]["ImportRowError"][];
+        };
+        /** ImportErrorResponse */
+        ImportErrorResponse: {
+            error: components["schemas"]["ImportErrorBody"];
+        };
+        /** ImportResult */
+        ImportResult: {
+            /** Imported */
+            imported: number;
+        };
+        /** ImportRowError */
+        ImportRowError: {
+            /**
+             * Row
+             * @description Line number in the CSV file (header is line 1).
+             */
+            row: number;
+            /**
+             * Field
+             * @description Column name, or null for whole-row problems.
+             */
+            field: string | null;
+            /** Message */
+            message: string;
         };
         /** InstitutionSummary */
         InstitutionSummary: {
@@ -96,6 +357,17 @@ export interface components {
             email: string;
             /** Password */
             password: string;
+        };
+        /** Page[CertificateOut] */
+        Page_CertificateOut_: {
+            /** Items */
+            items: components["schemas"]["CertificateOut"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Size */
+            size: number;
         };
         /** RefreshRequest */
         RefreshRequest: {
@@ -143,6 +415,48 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** VerificationOut */
+        VerificationOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Method */
+            method: string;
+            /**
+             * Result
+             * @description VERIFIED | MISMATCH | REVOKED | MANUAL_REVIEW
+             */
+            result: string;
+            /** Checks */
+            checks: components["schemas"]["CheckOut"][];
+            /** @description The registry record, when one was found. */
+            certificate?: components["schemas"]["CertificateOut"] | null;
+            /**
+             * Extracted Fields
+             * @description What the request itself carried (number, QR fields).
+             */
+            extracted_fields?: Record<string, never> | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** VerifyByIdRequest */
+        VerifyByIdRequest: {
+            /** Cert Number */
+            cert_number: string;
+        };
+        /** VerifyByQrRequest */
+        VerifyByQrRequest: {
+            /**
+             * Payload
+             * @description The text decoded from the QR code.
+             */
+            payload: string;
         };
     };
     responses: never;
@@ -257,6 +571,270 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserOut"];
+                };
+            };
+        };
+    };
+    list_certificates_api_v1_certificates_get: {
+        parameters: {
+            query?: {
+                /** @description Search number, roll, name */
+                q?: string | null;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_CertificateOut_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_certificate_api_v1_certificates_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CertificateCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CertificateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_certificates_api_v1_certificates_import_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_import_certificates_api_v1_certificates_import_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResult"];
+                };
+            };
+            /** @description Per-row CSV errors */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportErrorResponse"];
+                };
+            };
+        };
+    };
+    get_certificate_api_v1_certificates__certificate_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                certificate_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CertificateOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_certificate_pdf_api_v1_certificates__certificate_id__pdf_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                certificate_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The issued certificate PDF */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": unknown;
+                };
+            };
+            /** @description Certificate not found, or no PDF stored for it */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_by_id_api_v1_verify_id_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyByIdRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_by_qr_api_v1_verify_qr_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyByQrRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationOut"];
+                };
+            };
+            /** @description The payload is not a certificate QR code */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_verification_api_v1_verifications__verification_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                verification_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

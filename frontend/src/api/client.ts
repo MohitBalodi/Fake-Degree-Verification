@@ -72,3 +72,23 @@ export function apiErrorMessage(error: unknown, fallback = 'Something went wrong
   }
   return fallback;
 }
+
+/**
+ * Per-field messages from a 422 `validation_error`, keyed by field name
+ * (e.g. `{ cgpa: "..." }`). Errors not tied to one field go under `_form`.
+ */
+export function apiFieldErrors(error: unknown): Record<string, string> {
+  if (!axios.isAxiosError(error)) return {};
+  const fields = (
+    error.response?.data as
+      | { error?: { fields?: { loc: (string | number)[]; msg: string }[] } }
+      | undefined
+  )?.error?.fields;
+  const out: Record<string, string> = {};
+  for (const f of fields ?? []) {
+    // loc is ["body", "<field>"] for field errors, ["body"] for whole-body ones.
+    const key = f.loc.length > 1 ? String(f.loc[f.loc.length - 1]) : '_form';
+    out[key] ??= f.msg.replace(/^Value error, /, '');
+  }
+  return out;
+}

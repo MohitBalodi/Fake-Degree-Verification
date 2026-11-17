@@ -25,6 +25,13 @@ class Settings(BaseSettings):
     upload_max_mb: int = 10
     upload_retention_days: int = 7
 
+    # Issued certificate PDFs. Written once, served as-is, never pruned by the
+    # upload-retention job (which only touches verifier uploads).
+    issued_dir: str = "/data/uploads/certificates"
+
+    import_max_rows: int = 5000
+    import_max_mb: int = 2
+
     ocr_min_field_confidence: float = 0.85
     name_match_threshold: int = 90
     name_conflict_threshold: int = 75

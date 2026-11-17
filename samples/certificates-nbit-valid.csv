@@ -1,0 +1,7 @@
+cert_number,institution_code,student_name,roll_number,programme,year_of_passing,cgpa,marks,issue_date
+NBIT2025CS0101,NBIT,Aditi Verma,21CS101,B.Tech Computer Science and Engineering,2025,8.64,,2025-07-25
+NBIT2025CS0102,NBIT,Rahul Nair,21CS102,B.Tech Computer Science and Engineering,2025,7.92,,2025-07-25
+NBIT2025EC0103,NBIT,Simran Gill,21EC103,B.Tech Electronics and Communication,2025,9.05,,2025-07-25
+NBIT2025ME0104,NBIT,Farhan Ali,21ME104,B.Tech Mechanical Engineering,2025,6.88,,2025-07-25
+NBIT2025MB0105,NBIT,Kavya Reddy,23MB105,MBA,2025,,79.40,2025-07-25
+NBIT2025BC0106,NBIT,Manav Sethi,22BC106,BCA,2025,,84.10,2025-07-25
