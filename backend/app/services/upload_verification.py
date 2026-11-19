@@ -106,6 +106,10 @@ def _extracted_summary(
         summary["qr_present"] = True
         summary["cert_number"] = qr.cert_number
         summary["institution_code"] = qr.institution_code
+        # How hard the code was to read: which of the two readers got it, and
+        # at what upscale. A 3x hit means the photo was marginal.
+        summary["qr_reader"] = page.qr_reader
+        summary["qr_scale"] = page.qr_scale
     else:
         summary["qr_present"] = False
         if number := extraction.value("cert_number"):
@@ -148,6 +152,10 @@ def verify_upload(db: Session, upload: Upload, verifier: User) -> Verification:
         verifier_id=verifier.id,
         method=VerificationMethod.UPLOAD.value,
         certificate_id=cert.id if cert else None,
+        # Keeps the document reachable from its result: a verification request
+        # shows the institution this very file, and retention leaves it alone
+        # while that request is open.
+        upload_id=upload.id,
         result=outcome.result.value,
         checks=outcome.checks_as_dicts(),
         extracted_fields=_extracted_summary(upload, page, extraction, qr),

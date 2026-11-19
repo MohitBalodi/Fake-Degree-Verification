@@ -13,10 +13,13 @@ import AuditLog from '@/pages/AuditLog';
 import Institutions from '@/pages/Institutions';
 import Login from '@/pages/Login';
 import MyVerifications from '@/pages/MyVerifications';
+import RequestDetail from '@/pages/RequestDetail';
+import Requests from '@/pages/Requests';
 import VerificationDetail from '@/pages/VerificationDetail';
 
-// The QR scanner pulls in html5-qrcode, which only verifiers need: keep it out
-// of the main bundle.
+// Lazy-loaded since the live QR scanner lived here; the page is small now
+// that it does not, but splitting a route only verifiers reach still costs
+// nothing and keeps the main bundle to what every role needs.
 const Verify = lazy(() => import('@/pages/Verify'));
 
 export default function App() {
@@ -57,6 +60,10 @@ export default function App() {
               <Route path="/verifications" element={<MyVerifications />} />
               <Route path="/verifications/:id" element={<VerificationDetail />} />
             </Route>
+            {/* One list for three audiences: an institution answering, a
+                verifier waiting, an admin reading. The API scopes the rows. */}
+            <Route path="/requests" element={<Requests />} />
+            <Route path="/requests/:id" element={<RequestDetail />} />
             <Route element={<ProtectedRoute roles={['admin']} />}>
               <Route path="/admin/audit" element={<AuditLog />} />
               <Route path="/admin/institutions" element={<Institutions />} />

@@ -1,6 +1,7 @@
 import { CheckCircle2, CircleHelp, MinusCircle, Printer, XCircle } from 'lucide-react';
 
 import ExtractedFieldsTable from '@/components/ExtractedFieldsTable';
+import VerificationRequests from '@/components/VerificationRequests';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Verification, VerificationCheck } from '@/hooks/useVerify';
@@ -77,6 +78,34 @@ function checkLabel(name: string): string {
   return CHECK_LABELS[name] ?? name;
 }
 
+/**
+ * Which evidence actually carried the result, said plainly.
+ *
+ * Derived from the checks rather than sent as its own field: the decision
+ * rules in `verification/engine.py` turn on exactly these three checks, so a
+ * sentence read off them cannot drift out of step with the verdict.
+ */
+function pathUsed(verification: Verification): string | null {
+  if (verification.method !== 'upload') return null;
+  const statusOf = (name: string) =>
+    verification.checks.find((c) => c.name === name)?.status;
+  const compared = verification.checks.some(
+    (c) => c.name.startsWith('field_match.') && c.status === 'pass',
+  );
+  const verb = verification.result === 'VERIFIED' ? 'Verified' : 'Checked';
+
+  if (statusOf('file_hash') === 'pass') {
+    return `${verb} by the file itself — these are the exact bytes the institution issued.`;
+  }
+  if (statusOf('qr_signature') === 'pass') {
+    return `${verb} by the signed QR code on the document; its printed text was read as a cross-check.`;
+  }
+  if (compared) {
+    return `${verb} by reading the printed text — no signed QR could be read from this document.`;
+  }
+  return 'Neither a signed QR nor a known layout could be read from this document, so nothing was decided from it.';
+}
+
 const METHOD_LABELS: Record<string, string> = {
   id: 'Certificate number',
   qr: 'QR code',
@@ -117,9 +146,15 @@ interface Props {
   verification: Verification;
   /** Show the banner, the audit trail and the print button (the result page). */
   full?: boolean;
+  /** Open the "ask the institution" dialog. Only the result page passes it. */
+  onRequestConfirmation?: () => void;
 }
 
-export default function VerificationResult({ verification, full = false }: Props) {
+export default function VerificationResult({
+  verification,
+  full = false,
+  onRequestConfirmation,
+}: Props) {
   const result = RESULTS[verification.result] ?? {
     label: verification.result,
     explanation: '',
@@ -127,6 +162,7 @@ export default function VerificationResult({ verification, full = false }: Props
     badge: 'bg-zinc-600 text-white',
   };
   const cert = verification.certificate;
+  const path = pathUsed(verification);
   const number = cert?.cert_number ?? verification.extracted_fields?.cert_number ?? '—';
   const grade = [cert?.cgpa && `CGPA ${cert.cgpa}`, cert?.marks && `${cert.marks}%`]
     .filter(Boolean)
@@ -156,6 +192,7 @@ export default function VerificationResult({ verification, full = false }: Props
           )}
         </div>
         <p className="mt-3 max-w-3xl text-sm">{result.explanation}</p>
+        {path && <p className="mt-2 max-w-3xl text-sm font-medium">{path}</p>}
       </div>
 
       <Card>
@@ -187,6 +224,10 @@ export default function VerificationResult({ verification, full = false }: Props
       </Card>
 
       <ExtractedFieldsTable verification={verification} />
+
+      {onRequestConfirmation && (
+        <VerificationRequests verification={verification} onRequest={onRequestConfirmation} />
+      )}
 
       <Card>
         <CardHeader className="pb-1">
